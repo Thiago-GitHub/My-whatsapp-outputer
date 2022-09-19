@@ -1,0 +1,56 @@
+const { Client } = require('whatsapp-web.js'); //função principal para biblioteca
+const qrcode = require('qrcode-terminal'); 
+
+// Usa os valores salvos
+const client = new Client({
+    /*session: sessionData,
+     authStrategy: new LegacySessionAuth({
+         session: sessionData
+     }) */
+}); 
+
+client.on('qr', (qr) => {
+    // console.log('QR RECEIVED', qr); pegar o qr code em string, usado para teste do servidor...
+    qrcode.generate(qr, {small: true});
+});
+
+
+//avisa caso o cliente do qr code estiver pronto para usoclient.on('ready', () => {
+client.on('ready', () => {
+    console.log('Client is ready!');
+    client.getChats().then((chats) => { 
+        const myGroup = chats.find (
+        (chat) => chat.name === "Smart_Home"
+        );
+        client.sendMessage(
+            myGroup.id._serialized,
+            "Teste para arduíno"
+        );
+    });
+});
+
+/*
+função que retorna um output 
+
+
+client.on('message', message => {
+    if(message.body === 'oi') {
+        message.reply('resposta');
+    }
+});
+
+*/
+
+
+/* Salva os valores de authentificação concluidos com sucesso para ter um preset
+client.on('authenticado', (session) => {
+    sessionData = session;
+    fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), (err) => {
+        if (err) {
+            console.error(err);
+        }
+    });
+});
+*/
+ 
+client.initialize();
